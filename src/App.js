@@ -3,8 +3,20 @@ import { Button, Nav, Card, Container, Form, Row, Col } from "react-bootstrap";
 import Order from "./components/Order";
 import Summary from "./components/Summary";
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 function App() {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener("mouseenter", Swal.stopTimer);
+      toast.addEventListener("mouseleave", Swal.resumeTimer);
+    },
+  });
   const [errors, setErrors] = useState({});
   const vlaidate = (values) => {
     let errors1 = {};
@@ -14,10 +26,10 @@ function App() {
     if (!values.crust) {
       errors1.crust = "Required crust";
     }
-    if(values.cheese.includes && !values.cheese.values){
+    if (values.cheese.includes && !values.cheese.values) {
       errors1.cheese = "Required cheese";
     }
-    if(values.sauce.includes && !values.sauce.values){
+    if (values.sauce.includes && !values.sauce.values) {
       errors1.sauce = "Required sauce";
     }
     setErrors(errors1);
@@ -40,7 +52,6 @@ function App() {
   });
   useEffect(() => {
     vlaidate(formData);
-
   }, [formData]);
   return (
     <div>
@@ -57,8 +68,13 @@ function App() {
             onSubmit={(e) => {
               e.preventDefault();
               // vlaidate(formData);
-              if(!Object.keys(errors).length){
-                alert(JSON.stringify(formData,null,2));
+              if (!Object.keys(errors).length) {
+                alert(JSON.stringify(formData, null, 2));
+              } else {
+                Toast.fire({
+                  icon: 'error',
+                  title: Object.values(errors).map((item)=>item).join('\n')
+                })
               }
             }}
           >
